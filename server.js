@@ -1,26 +1,4 @@
-// ================================================================
-// server.js — Main Express application entry point
-//
-// Route groups mounted under API_PREFIX (/api/v1):
-//
-//   Auth          POST /auth/register
-//                 POST /auth/login
-//
-//   User          GET  /users/me
-//                 PATCH /users/me
-//                 GET  /users/me/earnings   (milestone progress included)
-//
-//   Views         POST /views/track         (10-gate anti-fraud pipeline)
-//
-//   Withdrawals   POST /withdrawals
-//                 GET  /withdrawals
-//
-//   Campaigns     GET  /campaigns
-//                 POST /campaigns
-//                 PATCH /campaigns/:id/status
-//
-//   Admin         GET  /admin/stats
-//                 GET  /admin/withdrawals
+
 //                 PATCH /admin/withdrawals/:id
 //                 PATCH /admin/views/:id/flag
 //                 GET  /admin/fraud-signals
@@ -1740,6 +1718,3 @@ process.on('uncaughtException', (err) => {
 
 if (require.main === module) {
   startServer();
-}
-
-module.exports = app;
