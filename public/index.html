@@ -1,0 +1,3323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ContentRewards MMK — Myanmar's Premier View-Based Content Monetisation Platform" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>ContentRewards MMK — Dashboard</title>
+
+  <style>
+    /* ============================================================
+       SECTION 1: CSS CUSTOM PROPERTIES (DESIGN TOKENS)
+    ============================================================ */
+    :root {
+      /* Brand Palette */
+      --bg-base       : #0f172a;
+      --bg-surface    : #1e293b;
+      --bg-raised     : #263548;
+      --bg-overlay    : #2d3f55;
+
+      /* Accent Colours */
+      --emerald       : #10b981;
+      --emerald-dim   : #059669;
+      --emerald-glow  : rgba(16, 185, 129, 0.18);
+      --emerald-glow2 : rgba(16, 185, 129, 0.08);
+      --blue          : #3b82f6;
+      --blue-dim      : #2563eb;
+      --blue-glow     : rgba(59, 130, 246, 0.18);
+      --gold          : #f59e0b;
+      --gold-dim      : #d97706;
+      --gold-glow     : rgba(245, 158, 11, 0.18);
+      --red           : #ef4444;
+      --red-glow      : rgba(239, 68, 68, 0.15);
+
+      /* Typography */
+      --text-primary  : #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted    : #64748b;
+      --text-inverse  : #0f172a;
+
+      /* Borders */
+      --border        : rgba(148, 163, 184, 0.10);
+      --border-focus  : rgba(59, 130, 246, 0.50);
+      --border-emerald: rgba(16, 185, 129, 0.35);
+      --border-gold   : rgba(245, 158, 11, 0.35);
+
+      /* Spacing */
+      --sidebar-w     : 260px;
+      --header-h      : 64px;
+      --radius-sm     : 8px;
+      --radius-md     : 12px;
+      --radius-lg     : 16px;
+      --radius-xl     : 24px;
+
+      /* Shadows */
+      --shadow-sm     : 0 2px 8px rgba(0,0,0,0.25);
+      --shadow-md     : 0 4px 20px rgba(0,0,0,0.35);
+      --shadow-lg     : 0 8px 40px rgba(0,0,0,0.45);
+      --shadow-emerald: 0 0 24px rgba(16, 185, 129, 0.22);
+      --shadow-blue   : 0 0 24px rgba(59, 130, 246, 0.22);
+      --shadow-gold   : 0 0 24px rgba(245, 158, 11, 0.22);
+
+      /* Transitions */
+      --ease          : cubic-bezier(0.4, 0, 0.2, 1);
+      --duration      : 220ms;
+    }
+
+    /* ============================================================
+       SECTION 2: RESET & BASE
+    ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                   'Inter', 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+
+    input, textarea, select {
+      font-family: inherit;
+      outline: none;
+    }
+
+    ul, ol {
+      list-style: none;
+    }
+
+    img, svg {
+      display: block;
+    }
+
+    /* ============================================================
+       SECTION 3: SCROLLBAR STYLING
+    ============================================================ */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-surface); }
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg-overlay);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* ============================================================
+       SECTION 4: LAYOUT SHELL
+    ============================================================ */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       SECTION 5: SIDEBAR NAVIGATION
+    ============================================================ */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      min-height: var(--header-h);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--emerald), var(--blue));
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-emerald);
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .logo-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--emerald);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 20px 24px 8px;
+    }
+
+    .nav-list {
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--duration) var(--ease),
+                  color var(--duration) var(--ease);
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      position: relative;
+      user-select: none;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-raised);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--emerald-glow);
+      color: var(--emerald);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      height: 60%;
+      width: 3px;
+      background: var(--emerald);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    .nav-item.active .nav-icon,
+    .nav-item:hover .nav-icon {
+      opacity: 1;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--emerald);
+      color: var(--text-inverse);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 999px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-raised);
+      cursor: pointer;
+      transition: background var(--duration) var(--ease);
+    }
+
+    .user-chip:hover { background: var(--bg-overlay); }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--emerald));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-info { flex: 1; min-width: 0; }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    /* ============================================================
+       SECTION 6: MAIN CONTENT AREA
+    ============================================================ */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ============================================================
+       SECTION 7: TOP HEADER BAR
+    ============================================================ */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      height: var(--header-h);
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      gap: 16px;
+    }
+
+    .topbar-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .topbar-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Anti-fraud badge */
+    .fraud-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--emerald-glow);
+      border: 1px solid var(--border-emerald);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--emerald);
+      animation: pulse-badge 2.5s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes pulse-badge {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+      50%       { box-shadow: 0 0 12px 3px rgba(16, 185, 129, 0.22); }
+    }
+
+    .fraud-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-raised);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: background var(--duration) var(--ease),
+                  color var(--duration) var(--ease);
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-overlay);
+      color: var(--text-primary);
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+      border: 2px solid var(--bg-surface);
+    }
+
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-raised);
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    /* ============================================================
+       SECTION 8: PAGE BODY / TAB PANELS
+    ============================================================ */
+    .page-body {
+      flex: 1;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Tab strip */
+    .tab-strip {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      width: fit-content;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      transition: background var(--duration) var(--ease),
+                  color var(--duration) var(--ease);
+      letter-spacing: 0.01em;
+    }
+
+    .tab-btn:hover { color: var(--text-primary); }
+
+    .tab-btn.active {
+      background: var(--bg-overlay);
+      color: var(--text-primary);
+    }
+
+    /* Panel visibility */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 28px; }
+
+    /* ============================================================
+       SECTION 9: KPI STATS ROW
+    ============================================================ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--duration) var(--ease),
+                  box-shadow var(--duration) var(--ease);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    .stat-card.green::after  { background: var(--emerald); }
+    .stat-card.blue::after   { background: var(--blue); }
+    .stat-card.gold::after   { background: var(--gold); }
+    .stat-card.red::after    { background: var(--red); }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .stat-icon-wrap {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon-wrap.green { background: var(--emerald-glow); }
+    .stat-icon-wrap.blue  { background: var(--blue-glow); }
+    .stat-icon-wrap.gold  { background: var(--gold-glow); }
+    .stat-icon-wrap.red   { background: var(--red-glow); }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .stat-value .currency-tag {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-right: 4px;
+    }
+
+    .stat-delta {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .stat-delta.up   { color: var(--emerald); }
+    .stat-delta.down { color: var(--red); }
+
+    /* ============================================================
+       SECTION 10: DUAL-PANEL MAIN GRID
+    ============================================================ */
+    .dual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* ============================================================
+       SECTION 11: CARDS / PANELS
+    ============================================================ */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title-group { display: flex; flex-direction: column; gap: 2px; }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .card-badge.green {
+      background: var(--emerald-glow);
+      color: var(--emerald);
+      border: 1px solid var(--border-emerald);
+    }
+
+    .card-badge.gold {
+      background: var(--gold-glow);
+      color: var(--gold);
+      border: 1px solid var(--border-gold);
+    }
+
+    .card-body { padding: 22px; }
+
+    /* ============================================================
+       SECTION 12: CAMPAIGN LAUNCH FORM (Creator Panel)
+    ============================================================ */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-group.full-width { grid-column: 1 / -1; }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .form-input {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 14px;
+      padding: 10px 14px;
+      transition: border-color var(--duration) var(--ease),
+                  box-shadow var(--duration) var(--ease);
+      width: 100%;
+    }
+
+    .form-input::placeholder { color: var(--text-muted); }
+
+    .form-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-glow);
+    }
+
+    .form-input.mmk-input {
+      padding-left: 42px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--emerald);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Estimated reach live preview */
+    .reach-preview {
+      background: var(--bg-raised);
+      border: 1px solid var(--border-emerald);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .reach-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .reach-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--emerald);
+      letter-spacing: -0.02em;
+    }
+
+    .reach-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    /* Payment method badges */
+    .payment-methods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pay-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid;
+      letter-spacing: 0.02em;
+      cursor: default;
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .pay-badge:hover { transform: scale(1.03); }
+
+    .pay-badge.kbz {
+      background: rgba(231, 166, 26, 0.10);
+      color: #e7a61a;
+      border-color: rgba(231, 166, 26, 0.30);
+    }
+
+    .pay-badge.wave {
+      background: rgba(239, 68, 68, 0.10);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.30);
+    }
+
+    .pay-badge.aya {
+      background: rgba(59, 130, 246, 0.10);
+      color: var(--blue);
+      border-color: rgba(59, 130, 246, 0.30);
+    }
+
+    .pay-badge.cb {
+      background: rgba(16, 185, 129, 0.10);
+      color: var(--emerald);
+      border-color: var(--border-emerald);
+    }
+
+    .pay-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* Submit button */
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--blue-dim), var(--blue));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      transition: opacity var(--duration) var(--ease),
+                  transform var(--duration) var(--ease),
+                  box-shadow var(--duration) var(--ease);
+      box-shadow: var(--shadow-blue);
+    }
+
+    .btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(59,130,246,0.35);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .btn-emerald {
+      width: 100%;
+      padding: 13px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--emerald-dim), var(--emerald));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      transition: opacity var(--duration) var(--ease),
+                  transform var(--duration) var(--ease),
+                  box-shadow var(--duration) var(--ease);
+      box-shadow: var(--shadow-emerald);
+    }
+
+    .btn-emerald:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(16,185,129,0.35);
+    }
+
+    /* ============================================================
+       SECTION 13: WALLET / EARNER PANEL
+    ============================================================ */
+    .wallet-hero {
+      background: linear-gradient(
+        135deg,
+        rgba(16, 185, 129, 0.10) 0%,
+        rgba(59, 130, 246, 0.07) 100%
+      );
+      border: 1px solid var(--border-emerald);
+      border-radius: var(--radius-lg);
+      padding: 28px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wallet-hero::before {
+      content: '💎';
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 56px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .wallet-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--emerald);
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+    }
+
+    .wallet-amount {
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .wallet-amount .mmk-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--emerald);
+    }
+
+    .wallet-sub {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+    }
+
+    .wallet-sub strong {
+      color: var(--emerald);
+    }
+
+    .wallet-stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .wallet-mini-stat {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .wms-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .wms-value {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    /* Milestone progress */
+    .milestone-card {
+      background: var(--bg-raised);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .milestone-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .milestone-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .milestone-pct {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .progress-track {
+      height: 8px;
+      background: var(--bg-overlay);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    .milestone-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .milestone-meta strong { color: var(--gold); }
+
+    .milestone-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .milestone-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .ms-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 2px solid var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .ms-dot.done {
+      background: var(--emerald);
+      border-color: var(--emerald);
+    }
+
+    .ms-dot.current {
+      background: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 0 6px var(--gold);
+    }
+
+    .milestone-step.done { color: var(--text-secondary); }
+    .milestone-step.current { color: var(--gold); font-weight: 600; }
+
+    /* ============================================================
+       SECTION 14: ANALYTICS CHART (SVG)
+    ============================================================ */
+    .chart-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      padding: 0 22px 16px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .chart-container {
+      padding: 0 22px 20px;
+    }
+
+    .chart-svg {
+      width: 100%;
+      height: 200px;
+      overflow: visible;
+    }
+
+    /* Chart grid lines */
+    .grid-line {
+      stroke: var(--border);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+
+    /* Chart axis labels */
+    .axis-label {
+      font-size: 10px;
+      fill: var(--text-muted);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* Gradient fills under lines */
+    .chart-area-views {
+      fill: url(#grad-views);
+      opacity: 0.6;
+    }
+
+    .chart-area-earn {
+      fill: url(#grad-earn);
+      opacity: 0.6;
+    }
+
+    /* Chart line paths */
+    .chart-line-views {
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 6px rgba(59,130,246,0.55));
+    }
+
+    .chart-line-earn {
+      fill: none;
+      stroke: var(--emerald);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 6px rgba(16,185,129,0.55));
+    }
+
+    /* Animated draw-on */
+    .chart-line-views,
+    .chart-line-earn {
+      stroke-dasharray: 800;
+      stroke-dashoffset: 800;
+      animation: draw-line 1.6s ease forwards;
+    }
+
+    .chart-line-earn { animation-delay: 0.2s; }
+
+    @keyframes draw-line {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Dot tooltips on chart */
+    .chart-dot {
+      transition: r 150ms ease;
+      cursor: pointer;
+    }
+
+    .chart-dot:hover { r: 6; }
+
+    /* Tooltip */
+    .chart-tooltip {
+      position: absolute;
+      background: var(--bg-overlay);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text-primary);
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 150ms ease;
+      z-index: 10;
+    }
+
+    .chart-tooltip.visible { opacity: 1; }
+
+    /* ============================================================
+       SECTION 15: LEADERBOARD
+    ============================================================ */
+    .leaderboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .lb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--border);
+      transition: background var(--duration) var(--ease);
+    }
+
+    .lb-row:last-child { border-bottom: none; }
+    .lb-row:hover { background: var(--bg-raised); }
+
+    .lb-rank {
+      width: 24px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .lb-rank.gold   { color: var(--gold); }
+    .lb-rank.silver { color: #94a3b8; }
+    .lb-rank.bronze { color: #b45309; }
+    .lb-rank.normal { color: var(--text-muted); }
+
+    .lb-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .lb-info { flex: 1; min-width: 0; }
+
+    .lb-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lb-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .lb-value {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .lb-amount {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--emerald);
+    }
+
+    .lb-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* Campaign status pill */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
+    .status-pill.active {
+      background: var(--emerald-glow);
+      color: var(--emerald);
+    }
+
+    .status-pill.hot {
+      background: var(--gold-glow);
+      color: var(--gold);
+    }
+
+    /* ============================================================
+       SECTION 16: TOAST NOTIFICATION
+    ============================================================ */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 380px;
+      box-shadow: var(--shadow-lg);
+      animation: slide-in 0.3s var(--ease) forwards;
+      pointer-events: auto;
+    }
+
+    .toast.leaving {
+      animation: slide-out 0.3s var(--ease) forwards;
+    }
+
+    @keyframes slide-in {
+      from { transform: translateX(120%); opacity: 0; }
+      to   { transform: translateX(0);   opacity: 1; }
+    }
+
+    @keyframes slide-out {
+      from { transform: translateX(0);   opacity: 1; }
+      to   { transform: translateX(120%); opacity: 0; }
+    }
+
+    .toast-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .toast-body { flex: 1; }
+
+    .toast-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .toast-msg {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .toast-close {
+      background: none;
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1;
+      padding: 0;
+      transition: color var(--duration) var(--ease);
+    }
+
+    .toast-close:hover { color: var(--text-primary); }
+
+    .toast.success { border-color: var(--border-emerald); }
+    .toast.error   { border-color: rgba(239,68,68,0.35); }
+    .toast.info    { border-color: rgba(59,130,246,0.35); }
+    .toast.gold    { border-color: var(--border-gold); }
+
+    /* ============================================================
+       SECTION 17: LOADING SHIMMER
+    ============================================================ */
+    .shimmer {
+      background: linear-gradient(
+        90deg,
+        var(--bg-raised) 25%,
+        var(--bg-overlay) 50%,
+        var(--bg-raised) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: var(--radius-sm);
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ============================================================
+       SECTION 18: MODAL
+    ============================================================ */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--duration) var(--ease);
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.94);
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .modal-backdrop.open .modal { transform: scale(1); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      background: var(--bg-raised);
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 18px;
+      transition: background var(--duration) var(--ease),
+                  color var(--duration) var(--ease);
+    }
+
+    .modal-close:hover {
+      background: var(--bg-overlay);
+      color: var(--text-primary);
+    }
+
+    .success-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--emerald-glow);
+      border: 2px solid var(--emerald);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 28px;
+      animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes pop-in {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-body { text-align: center; }
+
+    .modal-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+      text-align: left;
+    }
+
+    .summary-item {
+      background: var(--bg-raised);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .summary-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       SECTION 19: DIVIDERS & UTILITIES
+    ============================================================ */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    .spacer { flex: 1; }
+
+    .text-emerald { color: var(--emerald); }
+    .text-blue    { color: var(--blue); }
+    .text-gold    { color: var(--gold); }
+    .text-muted   { color: var(--text-muted); }
+    .text-sm      { font-size: 12px; }
+    .font-bold    { font-weight: 700; }
+
+    .full-width-card {
+      grid-column: 1 / -1;
+    }
+
+    /* ============================================================
+       SECTION 20: RESPONSIVE — TABLET (≤ 1024px)
+    ============================================================ */
+    @media (max-width: 1024px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+
+      .dual-grid { grid-template-columns: 1fr; }
+
+      .leaderboard-grid { grid-template-columns: 1fr; }
+
+      .fraud-badge { display: none; }
+    }
+
+    /* ============================================================
+       SECTION 21: RESPONSIVE — MOBILE (≤ 768px)
+    ============================================================ */
+    @media (max-width: 768px) {
+      :root { --sidebar-w: 0px; }
+
+      .sidebar {
+        transform: translateX(-260px);
+        width: 260px;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .main-content { margin-left: 0; }
+
+      .menu-toggle { display: flex; }
+
+      .stats-row { grid-template-columns: 1fr 1fr; }
+
+      .page-body { padding: 16px; gap: 20px; }
+
+      .form-grid { grid-template-columns: 1fr; }
+
+      .wallet-amount { font-size: 32px; }
+
+      .wallet-stats-row { grid-template-columns: 1fr 1fr; }
+
+      .topbar { padding: 0 16px; }
+
+      .topbar-title { font-size: 15px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .modal-summary-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       SECTION 22: OVERLAY for mobile sidebar
+    ============================================================ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 99;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar-overlay.active { display: block; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     TOAST CONTAINER (rendered into by JS)
+============================================================ -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<!-- ============================================================
+     CAMPAIGN SUCCESS MODAL
+============================================================ -->
+<div class="modal-backdrop" id="successModal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Campaign Launched 🚀</span>
+      <button class="modal-close" id="closeModal" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="success-icon">✓</div>
+      <p style="font-size:15px;font-weight:600;color:var(--text-primary);">
+        Your campaign is live!
+      </p>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:6px;">
+        Creators across Myanmar are already being matched to your campaign.
+      </p>
+      <div class="modal-summary-grid" id="modalSummary"></div>
+      <button class="btn-primary" style="margin-top:20px;" id="modalDoneBtn">
+        View Campaign Dashboard
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile sidebar overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ============================================================
+     APP SHELL
+============================================================ -->
+<div class="app-shell">
+
+  <!-- ──────────────────────────────────────────────────────────
+       SIDEBAR
+  ────────────────────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-icon">CR</div>
+      <div class="logo-text">
+        <span class="logo-name">ContentRewards</span>
+        <span class="logo-sub">Myanmar ✦ MMK</span>
+      </div>
+    </div>
+
+    <!-- Main nav -->
+    <span class="sidebar-section-label">Overview</span>
+    <ul class="nav-list" role="list">
+      <li class="nav-item active" data-tab="overview" role="button" tabindex="0">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Dashboard
+      </li>
+      <li class="nav-item" data-tab="overview" role="button" tabindex="0">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        Analytics
+        <span class="nav-badge">Live</span>
+      </li>
+    </ul>
+
+    <span class="sidebar-section-label">Monetisation</span>
+    <ul class="nav-list" role="list">
+      <li class="nav-item" data-tab="creator" role="button" tabindex="0">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+        Launch Campaign
+      </li>
+      <li class="nav-item" data-tab="earner" role="button" tabindex="0">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        My Wallet
+      </li>
+      <li class="nav-item" data-tab="earner" role="button" tabindex="0">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Withdrawals
+      </li>
+    </ul>
+
+    <span class="sidebar-section-label">Community</span>
+    <ul class="nav-list" role="list">
+      <li class="nav-item" data-tab="leaderboard" role="button" tabindex="0">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/>
+        </svg>
+        Leaderboard
+      </li>
+      <li class="nav-item" data-panel="none" role="button" tabindex="0">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Support
+      </li>
+    </ul>
+
+    <!-- User chip -->
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="avatar">MK</div>
+        <div class="user-info">
+          <div class="user-name">Ma Khin Thiri</div>
+          <div class="user-role">★ Premium Creator</div>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="var(--text-muted)" stroke-width="2" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </div>
+
+  </aside><!-- /sidebar -->
+
+  <!-- ──────────────────────────────────────────────────────────
+       MAIN CONTENT
+  ────────────────────────────────────────────────────────────── -->
+  <div class="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar" role="banner">
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+      <div class="topbar-left">
+        <span class="topbar-title" id="topbarTitle">Platform Dashboard</span>
+        <span class="topbar-subtitle" id="topbarSubtitle">
+          Welcome back — here's what's happening today
+        </span>
+      </div>
+
+      <div class="topbar-right">
+
+        <div class="fraud-badge" role="status" aria-label="Anti-fraud system active">
+          <div class="fraud-dot" aria-hidden="true"></div>
+          Enterprise Anti-Fraud Active
+        </div>
+
+        <button class="icon-btn" aria-label="Notifications">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notif-dot" aria-hidden="true"></span>
+        </button>
+
+        <button class="icon-btn" aria-label="Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83
+                     2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33
+                     1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09
+                     A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06
+                     a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06
+                     A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3
+                     a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9
+                     a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83
+                     2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68
+                     a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09
+                     a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06
+                     a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06
+                     A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21
+                     a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+
+      </div>
+    </header><!-- /topbar -->
+
+    <!-- PAGE BODY -->
+    <main class="page-body" role="main">
+
+      <!-- ── TAB STRIP ─────────────────────────────────────── -->
+      <div class="tab-strip" role="tablist" aria-label="Dashboard views">
+        <button class="tab-btn active" data-target="overview"
+                role="tab" aria-selected="true" tabindex="0">
+          Overview
+        </button>
+        <button class="tab-btn" data-target="creator"
+                role="tab" aria-selected="false" tabindex="-1">
+          Creator / Client
+        </button>
+        <button class="tab-btn" data-target="earner"
+                role="tab" aria-selected="false" tabindex="-1">
+          Earner / Wallet
+        </button>
+        <button class="tab-btn" data-target="leaderboard"
+                role="tab" aria-selected="false" tabindex="-1">
+          Leaderboard
+        </button>
+      </div>
+
+      <!-- ============================================================
+           TAB: OVERVIEW
+      ============================================================ -->
+      <div class="tab-panel active" id="panel-overview" role="tabpanel">
+
+        <!-- KPI Row -->
+        <div class="stats-row" aria-label="Key performance indicators">
+
+          <div class="stat-card green">
+            <div class="stat-header">
+              <span class="stat-label">Total Earned</span>
+              <div class="stat-icon-wrap green" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="var(--emerald)" stroke-width="2.5">
+                  <line x1="12" y1="1" x2="12" y2="23"/>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">
+              <span class="currency-tag">MMK</span>
+              <span id="kpi-earned">245,800</span>
+            </div>
+            <div class="stat-delta up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="3" aria-hidden="true">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+              +18.4% this week
+            </div>
+          </div>
+
+          <div class="stat-card blue">
+            <div class="stat-header">
+              <span class="stat-label">Active Views</span>
+              <div class="stat-icon-wrap blue" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="var(--blue)" stroke-width="2.5">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">
+              <span id="kpi-views">12,394</span>
+            </div>
+            <div class="stat-delta up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="3" aria-hidden="true">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+              +31.2% this week
+            </div>
+          </div>
+
+          <div class="stat-card gold">
+            <div class="stat-header">
+              <span class="stat-label">Live Campaigns</span>
+              <div class="stat-icon-wrap gold" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="var(--gold)" stroke-width="2.5">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14
+                                   18.18 21.02 12 17.77 5.82 21.02
+                                   7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">
+              <span id="kpi-campaigns">47</span>
+            </div>
+            <div class="stat-delta up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="3" aria-hidden="true">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+              +6 new today
+            </div>
+          </div>
+
+          <div class="stat-card red">
+            <div class="stat-header">
+              <span class="stat-label">Fraud Blocked</span>
+              <div class="stat-icon-wrap red" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="var(--red)" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value">
+              <span id="kpi-fraud">1,247</span>
+            </div>
+            <div class="stat-delta down">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="3" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+              -8.1% vs last week
+            </div>
+          </div>
+
+        </div><!-- /stats-row -->
+
+        <!-- Analytics Chart (full width) -->
+        <div class="card chart-wrap">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-title">Views vs Earnings Growth</span>
+              <span class="card-subtitle">Last 8 weeks — live platform data</span>
+            </div>
+            <div class="card-badge green">
+              <div class="fraud-dot" aria-hidden="true"
+                   style="background:var(--emerald);"></div>
+              Live
+            </div>
+          </div>
+
+          <div class="chart-legend" aria-label="Chart legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--blue);" aria-hidden="true"></div>
+              Total Views (×100)
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:var(--emerald);" aria-hidden="true"></div>
+              Earnings (MMK ×1,000)
+            </div>
+          </div>
+
+          <div class="chart-container" role="img" aria-label="Line chart: views and earnings over 8 weeks">
+            <svg class="chart-svg" id="analyticsSvg" viewBox="0 0 700 200"
+                 preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <!-- Gradient under earnings line -->
+                <linearGradient id="grad-earn" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stop-color="#10b981" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+                </linearGradient>
+                <!-- Gradient under views line -->
+                <linearGradient id="grad-views" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stop-color="#3b82f6" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+                </linearGradient>
+                <!-- Glow filter for dots -->
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Grid lines (rendered by JS) -->
+              <g id="chartGrid" aria-hidden="true"></g>
+
+              <!-- Chart areas (rendered by JS) -->
+              <g id="chartAreas" aria-hidden="true"></g>
+
+              <!-- Chart lines (rendered by JS) -->
+              <g id="chartLines" aria-hidden="true"></g>
+
+              <!-- Dots (rendered by JS) -->
+              <g id="chartDots" aria-hidden="true"></g>
+
+              <!-- X axis labels (rendered by JS) -->
+              <g id="chartXLabels" aria-hidden="true"></g>
+            </svg>
+          </div>
+
+          <div class="chart-tooltip" id="chartTooltip" role="tooltip" aria-hidden="true"></div>
+        </div><!-- /chart card -->
+
+      </div><!-- /panel-overview -->
+
+      <!-- ============================================================
+           TAB: CREATOR / CLIENT PANEL
+      ============================================================ -->
+      <div class="tab-panel" id="panel-creator" role="tabpanel">
+
+        <div class="dual-grid">
+
+          <!-- Campaign Launch Form -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-title">Launch New Campaign</span>
+                <span class="card-subtitle">Set your MMK payout rate and total budget</span>
+              </div>
+              <div class="card-badge gold">
+                ✦ Creator
+              </div>
+            </div>
+
+            <div class="card-body">
+              <form id="campaignForm" novalidate>
+                <div class="form-grid">
+
+                  <!-- Campaign title -->
+                  <div class="form-group full-width">
+                    <label class="form-label" for="campTitle">Campaign Title</label>
+                    <input
+                      class="form-input"
+                      type="text"
+                      id="campTitle"
+                      name="title"
+                      placeholder="e.g. Thit Myar Launch — Myanmar 2025"
+                      maxlength="200"
+                      required
+                      autocomplete="off"
+                    />
+                  </div>
+
+                  <!-- Target URL -->
+                  <div class="form-group full-width">
+                    <label class="form-label" for="campUrl">Target Content URL</label>
+                    <input
+                      class="form-input"
+                      type="url"
+                      id="campUrl"
+                      name="target_url"
+                      placeholder="https://youtube.com/watch?v=..."
+                      required
+                      autocomplete="off"
+                    />
+                  </div>
+
+                  <!-- Payout per 1000 views -->
+                  <div class="form-group">
+                    <label class="form-label" for="campPayout">
+                      Payout per 1,000 Views (MMK)
+                    </label>
+                    <div class="input-wrap">
+                      <span class="input-prefix">K</span>
+                      <input
+                        class="form-input mmk-input"
+                        type="number"
+                        id="campPayout"
+                        name="payout_per_1000_views_mmk"
+                        placeholder="5000"
+                        min="1000"
+                        step="100"
+                        required
+                        inputmode="numeric"
+                        aria-describedby="payoutHelp"
+                      />
+                    </div>
+                    <span id="payoutHelp" class="text-muted text-sm">
+                      Min: 1,000 MMK · Per-view = K/1000
+                    </span>
+                  </div>
+
+                  <!-- Total budget -->
+                  <div class="form-group">
+                    <label class="form-label" for="campBudget">
+                      Total Budget (MMK)
+                    </label>
+                    <div class="input-wrap">
+                      <span class="input-prefix">K</span>
+                      <input
+                        class="form-input mmk-input"
+                        type="number"
+                        id="campBudget"
+                        name="total_budget_mmk"
+                        placeholder="500000"
+                        min="10000"
+                        step="1000"
+                        required
+                        inputmode="numeric"
+                        aria-describedby="budgetHelp"
+                      />
+                    </div>
+                    <span id="budgetHelp" class="text-muted text-sm">
+                      Min: 10,000 MMK
+                    </span>
+                  </div>
+
+                  <!-- Min watch seconds -->
+                  <div class="form-group">
+                    <label class="form-label" for="campWatch">
+                      Min. Watch Time (seconds)
+                    </label>
+                    <input
+                      class="form-input"
+                      type="number"
+                      id="campWatch"
+                      name="min_watch_seconds"
+                      value="30"
+                      min="5"
+                      max="3600"
+                      required
+                      inputmode="numeric"
+                    />
+                  </div>
+
+                  <!-- Category -->
+                  <div class="form-group">
+                    <label class="form-label" for="campCategory">Category</label>
+                    <input
+                      class="form-input"
+                      type="text"
+                      id="campCategory"
+                      name="category"
+                      placeholder="Music, Gaming, Lifestyle…"
+                      maxlength="100"
+                    />
+                  </div>
+
+                  <!-- Live Estimated Reach preview -->
+                  <div class="form-group full-width">
+                    <div class="reach-preview" role="status" aria-live="polite"
+                         aria-label="Estimated campaign reach">
+                      <div>
+                        <div class="reach-label">Estimated Total Reach</div>
+                        <div class="reach-sub" id="reachFormula">
+                          Fill in budget &amp; payout to calculate
+                        </div>
+                      </div>
+                      <div style="text-align:right;">
+                        <div class="reach-value" id="reachValue">—</div>
+                        <div class="reach-sub">unique views</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Submit -->
+                  <div class="form-group full-width">
+                    <button type="submit" class="btn-primary" id="launchBtn">
+                      🚀 Launch Campaign
+                    </button>
+                  </div>
+
+                </div>
+              </form>
+            </div>
+          </div><!-- /campaign form card -->
+
+          <!-- Right column: payment methods + tips -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Accepted payment methods -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-title">Accepted Payout Methods</span>
+                  <span class="card-subtitle">Creators earn via these wallets</span>
+                </div>
+              </div>
+              <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+                <div class="payment-methods">
+                  <div class="pay-badge kbz" role="img" aria-label="KBZ Pay">
+                    <span class="pay-dot" aria-hidden="true"></span>
+                    KBZPay
+                  </div>
+                  <div class="pay-badge wave" role="img" aria-label="Wave Money">
+                    <span class="pay-dot" aria-hidden="true"></span>
+                    WavePay
+                  </div>
+                  <div class="pay-badge aya" role="img" aria-label="AYA Pay">
+                    <span class="pay-dot" aria-hidden="true"></span>
+                    AYA Pay
+                  </div>
+                  <div class="pay-badge cb" role="img" aria-label="CB Pay">
+                    <span class="pay-dot" aria-hidden="true"></span>
+                    CB Pay
+                  </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:8px;height:8px;border-radius:50%;
+                                background:var(--emerald);flex-shrink:0;" aria-hidden="true">
+                    </div>
+                    <span style="font-size:13px;color:var(--text-secondary);">
+                      Instant settlement — no waiting period
+                    </span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:8px;height:8px;border-radius:50%;
+                                background:var(--blue);flex-shrink:0;" aria-hidden="true">
+                    </div>
+                    <span style="font-size:13px;color:var(--text-secondary);">
+                      Platform fee: 2.5% on withdrawals only
+                    </span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div style="width:8px;height:8px;border-radius:50%;
+                                background:var(--gold);flex-shrink:0;" aria-hidden="true">
+                    </div>
+                    <span style="font-size:13px;color:var(--text-secondary);">
+                      Minimum payout: 5,000 MMK
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Pricing estimator card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-title">Pricing Calculator</span>
+                  <span class="card-subtitle">Live formula breakdown</span>
+                </div>
+              </div>
+              <div class="card-body" id="pricingCalc"
+                   style="display:flex;flex-direction:column;gap:12px;">
+                <div style="font-size:13px;color:var(--text-muted);text-align:center;
+                            padding:20px 0;">
+                  Enter your payout rate and budget to see the breakdown.
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /right column -->
+
+        </div><!-- /dual-grid -->
+
+      </div><!-- /panel-creator -->
+
+      <!-- ============================================================
+           TAB: EARNER / WALLET PANEL
+      ============================================================ -->
+      <div class="tab-panel" id="panel-earner" role="tabpanel">
+
+        <div class="dual-grid">
+
+          <!-- Wallet hero -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Hero balance -->
+            <div class="wallet-hero" role="region" aria-label="Wallet balance">
+              <div class="wallet-label">💰 Available Balance</div>
+              <div class="wallet-amount">
+                <span id="walletBalance">45,200</span>
+                <span class="mmk-label">MMK</span>
+              </div>
+              <div class="wallet-sub">
+                Lifetime earned:
+                <strong id="walletLifetime">245,800 MMK</strong>
+              </div>
+              <div class="wallet-stats-row">
+                <div class="wallet-mini-stat">
+                  <span class="wms-label">This Week</span>
+                  <span class="wms-value" style="color:var(--emerald);">
+                    +12,400
+                    <span style="font-size:11px;color:var(--emerald);">MMK</span>
+                  </span>
+                </div>
+                <div class="wallet-mini-stat">
+                  <span class="wms-label">Views Credited</span>
+                  <span class="wms-value" id="walletViews">2,480</span>
+                </div>
+                <div class="wallet-mini-stat">
+                  <span class="wms-label">Total Withdrawn</span>
+                  <span class="wms-value" style="color:var(--blue);">
+                    200,600
+                    <span style="font-size:11px;color:var(--blue);">MMK</span>
+                  </span>
+                </div>
+                <div class="wallet-mini-stat">
+                  <span class="wms-label">Campaigns Joined</span>
+                  <span class="wms-value" id="walletCampaigns">18</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Withdrawal form -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-title">Request Withdrawal</span>
+                  <span class="card-subtitle">Min. 5,000 MMK · 2.5% platform fee</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <form id="withdrawForm" novalidate
+                      style="display:flex;flex-direction:column;gap:14px;">
+
+                  <div class="form-group">
+                    <label class="form-label" for="wdAmount">Amount (MMK)</label>
+                    <div class="input-wrap">
+                      <span class="input-prefix">K</span>
+                      <input
+                        class="form-input mmk-input"
+                        type="number"
+                        id="wdAmount"
+                        placeholder="5000"
+                        min="5000"
+                        step="100"
+                        inputmode="numeric"
+                        aria-describedby="wdFeePreview"
+                      />
+                    </div>
+                    <span id="wdFeePreview" class="text-muted text-sm">
+                      Enter amount to see fee breakdown
+                    </span>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="wdMethod">Payment Method</label>
+                    <select class="form-input" id="wdMethod" required>
+                      <option value="">— Select method —</option>
+                      <option value="kbz_pay">KBZPay</option>
+                      <option value="wave_money">WavePay</option>
+                      <option value="aya_pay">AYA Pay</option>
+                      <option value="cb_pay">CB Pay</option>
+                      <option value="bank_transfer">Bank Transfer</option>
+                      <option value="crypto">Crypto</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="wdDetails">
+                      Account / Wallet Number
+                    </label>
+                    <input
+                      class="form-input"
+                      type="text"
+                      id="wdDetails"
+                      placeholder="09xxxxxxxxx or account number"
+                      required
+                    />
+                  </div>
+
+                  <button type="submit" class="btn-emerald">
+                    💸 Request Withdrawal
+                  </button>
+
+                </form>
+              </div>
+            </div>
+
+          </div><!-- /left wallet column -->
+
+          <!-- Right: Milestone progress -->
+          <div style="display:flex;flex-direction:column;gap:20px;">
+
+            <!-- Milestone card -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-title">Milestone Rewards</span>
+                  <span class="card-subtitle">Complete views to unlock bonuses</span>
+                </div>
+                <div class="card-badge gold">★ Bonus</div>
+              </div>
+              <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+                <!-- Current active milestone -->
+                <div class="milestone-card" role="region"
+                     aria-label="Milestone progress: 50 views">
+                  <div class="milestone-header">
+                    <span class="milestone-title">
+                      🏆 Next Milestone: 50 Views
+                    </span>
+                    <span class="milestone-pct" id="milePct">50%</span>
+                  </div>
+                  <div class="progress-track"
+                       role="progressbar" aria-valuenow="50"
+                       aria-valuemin="0" aria-valuemax="100"
+                       aria-label="50% progress toward 50 view milestone">
+                    <div class="progress-fill" id="mileProgress" style="width:50%;"></div>
+                  </div>
+                  <div class="milestone-meta">
+                    <span>25 of 50 views completed</span>
+                    <strong>+7,500 MMK Bonus</strong>
+                  </div>
+                </div>
+
+                <!-- All milestone steps -->
+                <div class="milestone-steps" aria-label="All milestone checkpoints">
+                  <div class="milestone-step done">
+                    <div class="ms-dot done" aria-hidden="true"></div>
+                    <span>10 Views — +1,500 MMK Bonus ✓</span>
+                  </div>
+                  <div class="milestone-step current">
+                    <div class="ms-dot current" aria-hidden="true"></div>
+                    <span>50 Views — +7,500 MMK Bonus ← You are here</span>
+                  </div>
+                  <div class="milestone-step">
+                    <div class="ms-dot" aria-hidden="true"></div>
+                    <span>100 Views — +15,000 MMK Bonus</span>
+                  </div>
+                  <div class="milestone-step">
+                    <div class="ms-dot" aria-hidden="true"></div>
+                    <span>500 Views — +75,000 MMK Bonus</span>
+                  </div>
+                  <div class="milestone-step">
+                    <div class="ms-dot" aria-hidden="true"></div>
+                    <span>1,000 Views — +150,000 MMK Bonus</span>
+                  </div>
+                  <div class="milestone-step">
+                    <div class="ms-dot" aria-hidden="true"></div>
+                    <span>5,000 Views — 🌟 Elite Creator Status</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Recent activity feed -->
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-title">Recent Activity</span>
+                  <span class="card-subtitle">Your latest reward events</span>
+                </div>
+              </div>
+              <div id="activityFeed" aria-label="Recent activity">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+          </div><!-- /right wallet column -->
+
+        </div><!-- /dual-grid -->
+
+      </div><!-- /panel-earner -->
+
+      <!-- ============================================================
+           TAB: LEADERBOARD
+      ============================================================ -->
+      <div class="tab-panel" id="panel-leaderboard" role="tabpanel">
+
+        <div class="leaderboard-grid">
+
+          <!-- Top Earners -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-title">🏆 Top Earners</span>
+                <span class="card-subtitle">This week's highest MMK earners</span>
+              </div>
+              <div class="card-badge green">Weekly</div>
+            </div>
+            <ul class="lb-list" id="topEarnersList" aria-label="Top earners leaderboard">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <!-- Top Campaigns -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-title">🔥 Hottest Campaigns</span>
+                <span class="card-subtitle">Highest paying active campaigns</span>
+              </div>
+              <div class="card-badge gold">Live</div>
+            </div>
+            <ul class="lb-list" id="topCampaignsList" aria-label="Top campaigns leaderboard">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Platform stats summary -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-title">Platform Statistics</span>
+              <span class="card-subtitle">All-time numbers</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
+              <div style="text-align:center;padding:12px;">
+                <div style="font-size:28px;font-weight:900;color:var(--emerald);">
+                  1.2M
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                  Total Views Tracked
+                </div>
+              </div>
+              <div style="text-align:center;padding:12px;">
+                <div style="font-size:28px;font-weight:900;color:var(--blue);">
+                  8,450
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                  Registered Creators
+                </div>
+              </div>
+              <div style="text-align:center;padding:12px;">
+                <div style="font-size:28px;font-weight:900;color:var(--gold);">
+                  842M
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                  MMK Total Paid Out
+                </div>
+              </div>
+              <div style="text-align:center;padding:12px;">
+                <div style="font-size:28px;font-weight:900;color:var(--text-primary);">
+                  99.3%
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">
+                  Fraud Detection Rate
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panel-leaderboard -->
+
+    </main><!-- /page-body -->
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+'use strict';
+
+/* ============================================================
+   MODULE: STATE
+============================================================ */
+const STATE = {
+  activeTab     : 'overview',
+  sidebarOpen   : false,
+  milestoneViews: 25,
+  milestoneTarget: 50,
+};
+
+/* ============================================================
+   MODULE: DOM REFERENCES
+============================================================ */
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+const dom = {
+  sidebar        : $('#sidebar'),
+  sidebarOverlay : $('#sidebarOverlay'),
+  menuToggle     : $('#menuToggle'),
+  toastContainer : $('#toastContainer'),
+  tabBtns        : $$('.tab-btn'),
+  tabPanels      : $$('.tab-panel'),
+  navItems       : $$('.nav-item[data-tab]'),
+  topbarTitle    : $('#topbarTitle'),
+  topbarSubtitle : $('#topbarSubtitle'),
+
+  // Campaign form
+  campForm       : $('#campaignForm'),
+  campPayout     : $('#campPayout'),
+  campBudget     : $('#campBudget'),
+  reachValue     : $('#reachValue'),
+  reachFormula   : $('#reachFormula'),
+  pricingCalc    : $('#pricingCalc'),
+  launchBtn      : $('#launchBtn'),
+
+  // Withdrawal form
+  wdForm         : $('#withdrawForm'),
+  wdAmount       : $('#wdAmount'),
+  wdFeePreview   : $('#wdFeePreview'),
+
+  // Milestone
+  mileProgress   : $('#mileProgress'),
+  milePct        : $('#milePct'),
+
+  // Leaderboard
+  topEarnersList  : $('#topEarnersList'),
+  topCampaignsList: $('#topCampaignsList'),
+
+  // Chart
+  analyticsSvg   : $('#analyticsSvg'),
+  chartTooltip   : $('#chartTooltip'),
+  chartGrid      : $('#chartGrid'),
+  chartAreas     : $('#chartAreas'),
+  chartLines     : $('#chartLines'),
+  chartDots      : $('#chartDots'),
+  chartXLabels   : $('#chartXLabels'),
+
+  // Modal
+  successModal   : $('#successModal'),
+  closeModal     : $('#closeModal'),
+  modalSummary   : $('#modalSummary'),
+  modalDoneBtn   : $('#modalDoneBtn'),
+
+  // Activity feed
+  activityFeed   : $('#activityFeed'),
+};
+
+/* ============================================================
+   MODULE: TABS
+============================================================ */
+const PANEL_TITLES = {
+  overview   : ['Platform Dashboard', 'Welcome back — here\'s what\'s happening today'],
+  creator    : ['Launch Campaign', 'Configure your MMK payout rate and deploy your campaign'],
+  earner     : ['My Wallet', 'Track your MMK earnings and request withdrawals'],
+  leaderboard: ['Leaderboard', 'Top earners and hottest campaigns this week'],
+};
+
+function activateTab(targetId) {
+  STATE.activeTab = targetId;
+
+  dom.tabBtns.forEach((btn) => {
+    const isActive = btn.dataset.target === targetId;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive);
+    btn.setAttribute('tabindex', isActive ? '0' : '-1');
+  });
+
+  dom.tabPanels.forEach((panel) => {
+    panel.classList.toggle('active', panel.id === `panel-${targetId}`);
+  });
+
+  dom.navItems.forEach((item) => {
+    item.classList.toggle('active', item.dataset.tab === targetId);
+  });
+
+  const [title, subtitle] = PANEL_TITLES[targetId] || PANEL_TITLES.overview;
+  dom.topbarTitle.textContent   = title;
+  dom.topbarSubtitle.textContent = subtitle;
+
+  // Close sidebar on mobile after navigation
+  if (window.innerWidth <= 768) closeSidebar();
+}
+
+dom.tabBtns.forEach((btn) => {
+  btn.addEventListener('click', () => activateTab(btn.dataset.target));
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      activateTab(btn.dataset.target);
+    }
+  });
+});
+
+dom.navItems.forEach((item) => {
+  item.addEventListener('click', () => activateTab(item.dataset.tab));
+  item.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      activateTab(item.dataset.tab);
+    }
+  });
+});
+
+/* ============================================================
+   MODULE: MOBILE SIDEBAR
+============================================================ */
+function openSidebar() {
+  STATE.sidebarOpen = true;
+  dom.sidebar.classList.add('open');
+  dom.sidebarOverlay.classList.add('active');
+  dom.menuToggle.setAttribute('aria-expanded', 'true');
+}
+
+function closeSidebar() {
+  STATE.sidebarOpen = false;
+  dom.sidebar.classList.remove('open');
+  dom.sidebarOverlay.classList.remove('active');
+  dom.menuToggle.setAttribute('aria-expanded', 'false');
+}
+
+dom.menuToggle.addEventListener('click', () => {
+  STATE.sidebarOpen ? closeSidebar() : openSidebar();
+});
+
+dom.sidebarOverlay.addEventListener('click', closeSidebar);
+
+/* ============================================================
+   MODULE: TOAST NOTIFICATIONS
+============================================================ */
+const ICONS = {
+  success: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="var(--emerald)" stroke-width="2.5" aria-hidden="true">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>`,
+  error  : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="var(--red)" stroke-width="2.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>`,
+  info   : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="var(--blue)" stroke-width="2.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>`,
+  gold   : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="var(--gold)" stroke-width="2.5" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14
+                               18.18 21.02 12 17.77 5.82 21.02
+                               7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>`,
+};
+
+function showToast(type = 'info', title = '', message = '', duration = 4500) {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.setAttribute('role', 'alert');
+  toast.innerHTML = `
+    <div class="toast-icon">${ICONS[type] || ICONS.info}</div>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      ${message ? `<div class="toast-msg">${message}</div>` : ''}
+    </div>
+    <button class="toast-close" aria-label="Dismiss notification">×</button>
+  `;
+
+  const close = () => {
+    toast.classList.add('leaving');
+    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+  };
+
+  toast.querySelector('.toast-close').addEventListener('click', close);
+  dom.toastContainer.appendChild(toast);
+
+  if (duration > 0) setTimeout(close, duration);
+}
+
+/* ============================================================
+   MODULE: CAMPAIGN FORM — LIVE REACH CALCULATOR
+============================================================ */
+function calcReach() {
+  const payout = parseInt(dom.campPayout.value, 10);
+  const budget = parseInt(dom.campBudget.value, 10);
+
+  if (!payout || !budget || payout < 1 || budget < 1) {
+    dom.reachValue.textContent   = '—';
+    dom.reachFormula.textContent = 'Fill in budget & payout to calculate';
+    renderPricingCalc(null, null);
+    return;
+  }
+
+  const rewardPerView = Math.floor(payout / 1000);
+
+  if (rewardPerView < 1) {
+    dom.reachValue.textContent   = '—';
+    dom.reachFormula.textContent = `⚠ Payout too low — FLOOR(${payout}/1000) = 0 MMK/view`;
+    renderPricingCalc(payout, budget);
+    return;
+  }
+
+  const estimatedViews = Math.floor(budget / rewardPerView);
+  dom.reachValue.textContent   = estimatedViews.toLocaleString();
+  dom.reachFormula.textContent =
+    `FLOOR(${payout.toLocaleString()} ÷ 1000) = ${rewardPerView} MMK/view`;
+
+  renderPricingCalc(payout, budget);
+}
+
+function renderPricingCalc(payout, budget) {
+  if (!payout || !budget) {
+    dom.pricingCalc.innerHTML = `
+      <div style="font-size:13px;color:var(--text-muted);
+                  text-align:center;padding:20px 0;">
+        Enter your payout rate and budget to see the breakdown.
+      </div>`;
+    return;
+  }
+
+  const rewardPerView = Math.floor(payout / 1000);
+  const maxViews      = rewardPerView >= 1 ? Math.floor(budget / rewardPerView) : 0;
+  const feeEstimate   = Math.floor(budget * 0.025);
+
+  dom.pricingCalc.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      ${calcRow('Payout Rate',   `${payout.toLocaleString()} MMK / 1,000 views`, 'gold')}
+      ${calcRow('Per-View Cost', `${rewardPerView} MMK / view`, 'emerald')}
+      ${calcRow('Total Budget',  `${budget.toLocaleString()} MMK`, 'blue')}
+      ${calcRow('Est. Reach',    `${maxViews.toLocaleString()} views`, 'emerald')}
+      ${calcRow('Platform Fee',  `~${feeEstimate.toLocaleString()} MMK (2.5%)`, 'muted')}
+      ${calcRow('Net Spend',
+        `~${(budget - feeEstimate).toLocaleString()} MMK`, 'blue')}
+    </div>
+    <div style="margin-top:12px;padding:10px;border-radius:6px;
+                background:var(--emerald-glow2);border:1px solid var(--border-emerald);
+                font-size:12px;color:var(--emerald);text-align:center;">
+      Formula: reward_per_view = FLOOR(${payout} ÷ 1,000) = <strong>${rewardPerView} MMK</strong>
+    </div>`;
+}
+
+function calcRow(label, value, colour) {
+  const colourMap = {
+    emerald: 'var(--emerald)',
+    blue   : 'var(--blue)',
+    gold   : 'var(--gold)',
+    muted  : 'var(--text-muted)',
+  };
+  const c = colourMap[colour] || 'var(--text-primary)';
+  return `
+    <div style="background:var(--bg-raised);border-radius:6px;padding:10px 12px;">
+      <div style="font-size:10px;color:var(--text-muted);font-weight:600;
+                  text-transform:uppercase;letter-spacing:0.06em;">${label}</div>
+      <div style="font-size:13px;font-weight:700;color:${c};margin-top:3px;">${value}</div>
+    </div>`;
+}
+
+dom.campPayout.addEventListener('input', calcReach);
+dom.campBudget.addEventListener('input', calcReach);
+
+/* ============================================================
+   MODULE: CAMPAIGN FORM SUBMISSION
+============================================================ */
+dom.campForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const title  = $('#campTitle').value.trim();
+  const url    = $('#campUrl').value.trim();
+  const payout = parseInt(dom.campPayout.value, 10);
+  const budget = parseInt(dom.campBudget.value, 10);
+
+  // Minimal client-side validation
+  if (!title) {
+    showToast('error', 'Missing Field', 'Please enter a campaign title.');
+    return;
+  }
+  if (!url || !url.startsWith('http')) {
+    showToast('error', 'Invalid URL', 'Please enter a valid target URL.');
+    return;
+  }
+  if (!payout || payout < 1000) {
+    showToast('error', 'Invalid Payout',
+      'Payout rate must be at least 1,000 MMK per 1,000 views.');
+    return;
+  }
+  if (!budget || budget < 10000) {
+    showToast('error', 'Invalid Budget', 'Minimum campaign budget is 10,000 MMK.');
+    return;
+  }
+
+  const rewardPerView  = Math.floor(payout / 1000);
+  const estimatedViews = Math.floor(budget / rewardPerView);
+
+  // Populate success modal
+  dom.modalSummary.innerHTML = `
+    ${summaryItem('Campaign',      title)}
+    ${summaryItem('Total Budget',  budget.toLocaleString() + ' MMK')}
+    ${summaryItem('Rate / 1K Views', payout.toLocaleString() + ' MMK')}
+    ${summaryItem('Per-View Reward', rewardPerView + ' MMK')}
+    ${summaryItem('Est. Reach',     estimatedViews.toLocaleString() + ' views')}
+    ${summaryItem('Status',         '🟢 Active')}
+  `;
+
+  openModal();
+  dom.campForm.reset();
+  dom.reachValue.textContent   = '—';
+  dom.reachFormula.textContent = 'Fill in budget & payout to calculate';
+  renderPricingCalc(null, null);
+});
+
+function summaryItem(label, value) {
+  return `
+    <div class="summary-item">
+      <div class="summary-label">${label}</div>
+      <div class="summary-value">${value}</div>
+    </div>`;
+}
+
+/* ============================================================
+   MODULE: MODAL
+============================================================ */
+function openModal() {
+  dom.successModal.classList.add('open');
+  dom.successModal.removeAttribute('aria-hidden');
+  dom.closeModal.focus();
+}
+
+function closeModal() {
+  dom.successModal.classList.remove('open');
+  dom.successModal.setAttribute('aria-hidden', 'true');
+}
+
+dom.closeModal.addEventListener('click', closeModal);
+dom.modalDoneBtn.addEventListener('click', () => {
+  closeModal();
+  activateTab('creator');
+  showToast('success', 'Campaign Live!', 'Your campaign is now accepting views.');
+});
+
+dom.successModal.addEventListener('click', (e) => {
+  if (e.target === dom.successModal) closeModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && dom.successModal.classList.contains('open')) {
+    closeModal();
+  }
+});
+
+/* ============================================================
+   MODULE: WITHDRAWAL FORM — LIVE FEE PREVIEW
+============================================================ */
+dom.wdAmount.addEventListener('input', () => {
+  const amount = parseInt(dom.wdAmount.value, 10);
+  if (!amount || amount < 1) {
+    dom.wdFeePreview.textContent = 'Enter amount to see fee breakdown';
+    return;
+  }
+  const fee = Math.floor(amount * 0.025);
+  const net = amount - fee;
+  dom.wdFeePreview.innerHTML =
+    `Fee: <strong style="color:var(--gold);">${fee.toLocaleString()} MMK</strong>
+     · You receive:
+     <strong style="color:var(--emerald);">${net.toLocaleString()} MMK</strong>`;
+});
+
+dom.wdForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const amount = parseInt(dom.wdAmount.value, 10);
+  const method = $('#wdMethod').value;
+  const detail = $('#wdDetails').value.trim();
+
+  if (!amount || amount < 5000) {
+    showToast('error', 'Invalid Amount', 'Minimum withdrawal is 5,000 MMK.');
+    return;
+  }
+  if (!method) {
+    showToast('error', 'Select Method', 'Please choose a payment method.');
+    return;
+  }
+  if (!detail) {
+    showToast('error', 'Missing Details', 'Please enter your account / wallet number.');
+    return;
+  }
+
+  const fee = Math.floor(amount * 0.025);
+  const net = amount - fee;
+  showToast(
+    'success',
+    'Withdrawal Submitted',
+    `${net.toLocaleString()} MMK will be sent to your ${method.replace(/_/g,' ')} account.`,
+    6000
+  );
+  dom.wdForm.reset();
+  dom.wdFeePreview.textContent = 'Enter amount to see fee breakdown';
+});
+
+/* ============================================================
+   MODULE: MILESTONE PROGRESS ANIMATION
+============================================================ */
+function setMilestoneProgress(current, target) {
+  const pct    = Math.min(Math.round((current / target) * 100), 100);
+  const fill   = dom.mileProgress;
+  const label  = dom.milePct;
+
+  // Allow DOM to settle before animating
+  requestAnimationFrame(() => {
+    fill.style.width = `${pct}%`;
+    fill.parentElement.setAttribute('aria-valuenow', pct);
+  });
+
+  // Count-up animation for percentage label
+  let current_pct = 0;
+  const step = Math.ceil(pct / 30);
+  const timer = setInterval(() => {
+    current_pct = Math.min(current_pct + step, pct);
+    label.textContent = `${current_pct}%`;
+    if (current_pct >= pct) clearInterval(timer);
+  }, 30);
+}
+
+/* ============================================================
+   MODULE: ANALYTICS CHART (SVG)
+============================================================ */
+// Simulated 8-week data
+const CHART_DATA = {
+  weeks   : ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8'],
+  views   : [820,  1340, 1890, 2450, 3100, 4280, 6700, 12394],
+  earnings: [4100, 6700, 9450, 12250, 15500, 21400, 33500, 61970],
+};
+
+function buildChart() {
+  const SVG_W   = 700;
+  const SVG_H   = 200;
+  const PAD_L   = 40;
+  const PAD_R   = 20;
+  const PAD_T   = 16;
+  const PAD_B   = 30;
+  const DRAW_W  = SVG_W - PAD_L - PAD_R;
+  const DRAW_H  = SVG_H - PAD_T - PAD_B;
+  const N       = CHART_DATA.weeks.length;
+
+  // Normalise both series to 0–1 range independently
+  const maxV = Math.max(...CHART_DATA.views);
+  const maxE = Math.max(...CHART_DATA.earnings);
+
+  function xPos(i) {
+    return PAD_L + (i / (N - 1)) * DRAW_W;
+  }
+
+  function yPosV(val) {
+    return PAD_T + (1 - val / maxV) * DRAW_H;
+  }
+
+  function yPosE(val) {
+    return PAD_T + (1 - val / maxE) * DRAW_H;
+  }
+
+  // Grid lines (4 horizontal)
+  let gridHTML = '';
+  for (let i = 0; i <= 4; i++) {
+    const y = PAD_T + (i / 4) * DRAW_H;
+    gridHTML += `<line class="grid-line" x1="${PAD_L}" y1="${y}"
+                       x2="${SVG_W - PAD_R}" y2="${y}"/>`;
+  }
+  dom.chartGrid.innerHTML = gridHTML;
+
+  // Build smooth path using cubic bezier
+  function smoothPath(points) {
+    let d = `M ${points[0][0]} ${points[0][1]}`;
+    for (let i = 1; i < points.length; i++) {
+      const [x0, y0] = points[i - 1];
+      const [x1, y1] = points[i];
+      const mx = (x0 + x1) / 2;
+      d += ` C ${mx} ${y0}, ${mx} ${y1}, ${x1} ${y1}`;
+    }
+    return d;
+  }
+
+  function areaPath(points, bottomY) {
+    const line = smoothPath(points);
+    const last = points[points.length - 1];
+    const first = points[0];
+    return `${line} L ${last[0]} ${bottomY} L ${first[0]} ${bottomY} Z`;
+  }
+
+  const viewPoints    = CHART_DATA.views.map((v, i)    => [xPos(i), yPosV(v)]);
+  const earningPoints = CHART_DATA.earnings.map((v, i) => [xPos(i), yPosE(v)]);
+  const bottomY       = PAD_T + DRAW_H;
+
+  // Areas
+  dom.chartAreas.innerHTML = `
+    <path class="chart-area-views"
+          d="${areaPath(viewPoints, bottomY)}" />
+    <path class="chart-area-earn"
+          d="${areaPath(earningPoints, bottomY)}" />
+  `;
+
+  // Lines
+  dom.chartLines.innerHTML = `
+    <path class="chart-line-views"
+          d="${smoothPath(viewPoints)}" />
+    <path class="chart-line-earn"
+          d="${smoothPath(earningPoints)}" />
+  `;
+
+  // Dots (views = blue, earnings = emerald)
+  let dotsHTML   = '';
+  let labelsHTML = '';
+
+  CHART_DATA.weeks.forEach((week, i) => {
+    const vx = viewPoints[i][0];
+    const vy = viewPoints[i][1];
+    const ex = earningPoints[i][0];
+    const ey = earningPoints[i][1];
+
+    dotsHTML += `
+      <circle class="chart-dot" cx="${vx}" cy="${vy}" r="4"
+              fill="var(--blue)" filter="url(#glow)"
+              data-type="views" data-week="${week}"
+              data-val="${CHART_DATA.views[i].toLocaleString()}"/>
+      <circle class="chart-dot" cx="${ex}" cy="${ey}" r="4"
+              fill="var(--emerald)" filter="url(#glow)"
+              data-type="earn" data-week="${week}"
+              data-val="${CHART_DATA.earnings[i].toLocaleString()}"/>
+    `;
+
+    labelsHTML += `
+      <text class="axis-label" x="${vx}" y="${SVG_H - 6}"
+            text-anchor="middle">${week}</text>
+    `;
+  });
+
+  dom.chartDots.innerHTML   = dotsHTML;
+  dom.chartXLabels.innerHTML = labelsHTML;
+
+  // Dot tooltip interaction
+  $$('.chart-dot', dom.analyticsSvg).forEach((dot) => {
+    dot.addEventListener('mouseenter', (e) => {
+      const rect    = dom.analyticsSvg.closest('.card').getBoundingClientRect();
+      const dotRect = dot.getBoundingClientRect();
+      const type    = dot.dataset.type === 'views' ? 'Views (×100)' : 'Earnings (MMK ×1K)';
+      dom.chartTooltip.innerHTML =
+        `<strong>${dot.dataset.week}</strong><br/>${type}: ${dot.dataset.val}`;
+      dom.chartTooltip.style.left = `${dotRect.left - rect.left + 8}px`;
+      dom.chartTooltip.style.top  = `${dotRect.top  - rect.top  - 44}px`;
+      dom.chartTooltip.classList.add('visible');
+      dom.chartTooltip.removeAttribute('aria-hidden');
+    });
+    dot.addEventListener('mouseleave', () => {
+      dom.chartTooltip.classList.remove('visible');
+      dom.chartTooltip.setAttribute('aria-hidden', 'true');
+    });
+  });
+}
+
+/* ============================================================
+   MODULE: KPI COUNTER ANIMATION
+============================================================ */
+function animateCounter(el, target, duration = 1400, prefix = '', suffix = '') {
+  if (!el) return;
+  const start    = performance.now();
+  const startVal = 0;
+
+  function step(now) {
+    const elapsed  = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease-out cubic
+    const eased    = 1 - Math.pow(1 - progress, 3);
+    const current  = Math.round(startVal + (target - startVal) * eased);
+    el.textContent = prefix + current.toLocaleString() + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
+/* ============================================================
+   MODULE: LEADERBOARD DATA
+============================================================ */
+const EARNER_DATA = [
+  { name: 'Ko Aung Kyaw Zin', region: 'Yangon',  earned: 128400, views: 856,  grad: 'linear-gradient(135deg,#f59e0b,#ef4444)' },
+  { name: 'Ma Ei Ei Mon',      region: 'Mandalay', earned: 97200,  views: 648,  grad: 'linear-gradient(135deg,#3b82f6,#8b5cf6)' },
+  { name: 'Ko Zay Yar Lin',    region: 'Bago',     earned: 84500,  views: 563,  grad: 'linear-gradient(135deg,#10b981,#3b82f6)' },
+  { name: 'Ma Hnin Wai',       region: 'Sagaing',  earned: 71300,  views: 475,  grad: 'linear-gradient(135deg,#ec4899,#f59e0b)' },
+  { name: 'U Kyaw Thu',        region: 'Kayin',    earned: 58900,  views: 393,  grad: 'linear-gradient(135deg,#6366f1,#10b981)' },
+];
+
+const CAMPAIGN_DATA = [
+  { title: 'Shwe Taung Dev Launch',   payout: 8000,  views: 4200, hot: true },
+  { title: 'Yoma Bank Digital 2025',  payout: 6500,  views: 3780, hot: true },
+  { title: 'KBZ Mobile Finance',      payout: 5000,  views: 3100, hot: false },
+  { title: 'CityMart Promo Season',   payout: 4200,  views: 2650, hot: false },
+  { title: 'MPT 5G Coverage Boost',   payout: 3800,  views: 2200, hot: false },
+];
+
+const RANK_CLASSES = ['gold', 'silver', 'bronze', 'normal', 'normal'];
+
+function renderLeaderboards() {
+  // Top earners
+  dom.topEarnersList.innerHTML = EARNER_DATA.map((user, i) => `
+    <li class="lb-row">
+      <span class="lb-rank ${RANK_CLASSES[i]}" aria-label="Rank ${i + 1}">
+        ${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
+      </span>
+      <div class="lb-avatar" style="background:${user.grad};"
+           aria-hidden="true">
+        ${user.name.split(' ').map(w => w[0]).slice(0,2).join('')}
+      </div>
+      <div class="lb-info">
+        <div class="lb-name">${user.name}</div>
+        <div class="lb-meta">${user.region}</div>
+      </div>
+      <div class="lb-value">
+        <div class="lb-amount">${user.earned.toLocaleString()} MMK</div>
+        <div class="lb-sub">${user.views.toLocaleString()} views</div>
+      </div>
+    </li>
+  `).join('');
+
+  // Top campaigns
+  dom.topCampaignsList.innerHTML = CAMPAIGN_DATA.map((camp, i) => `
+    <li class="lb-row">
+      <span class="lb-rank ${RANK_CLASSES[i]}" aria-label="Rank ${i + 1}">
+        ${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`}
+      </span>
+      <div class="lb-info">
+        <div class="lb-name">${camp.title}</div>
+        <div class="lb-meta">
+          <span class="status-pill ${camp.hot ? 'hot' : 'active'}">
+            ${camp.hot ? '🔥 Hot' : '● Active'}
+          </span>
+        </div>
+      </div>
+      <div class="lb-value">
+        <div class="lb-amount">${camp.payout.toLocaleString()} MMK/1K</div>
+        <div class="lb-sub">${camp.views.toLocaleString()} views</div>
+      </div>
+    </li>
+  `).join('');
+}
+
+/* ============================================================
+   MODULE: ACTIVITY FEED
+============================================================ */
+const ACTIVITY_ITEMS = [
+  { icon:'💰', text:'Earned 5 MMK from <b>Shwe Taung Dev</b>',     time:'2 min ago', colour:'var(--emerald)' },
+  { icon:'🏆', text:'Milestone reached: <b>10 Views Bonus!</b>',    time:'14 min ago', colour:'var(--gold)' },
+  { icon:'💰', text:'Earned 5 MMK from <b>Yoma Bank Digital</b>',   time:'31 min ago', colour:'var(--emerald)' },
+  { icon:'💸', text:'Withdrawal of <b>20,000 MMK</b> approved',     time:'2 h ago',  colour:'var(--blue)' },
+  { icon:'💰', text:'Earned 8 MMK from <b>KBZ Mobile Finance</b>', time:'3 h ago',  colour:'var(--emerald)' },
+];
+
+function renderActivityFeed() {
+  if (!dom.activityFeed) return;
+  dom.activityFeed.innerHTML = ACTIVITY_ITEMS.map((item) => `
+    <div style="display:flex;align-items:flex-start;gap:10px;
+                padding:11px 22px;border-bottom:1px solid var(--border);">
+      <div style="width:28px;height:28px;border-radius:50%;
+                  background:${item.colour}22;display:flex;
+                  align-items:center;justify-content:center;
+                  font-size:14px;flex-shrink:0;"
+           aria-hidden="true">${item.icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;color:var(--text-secondary);">${item.text}</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${item.time}</div>
+      </div>
+    </div>
+  `).join('') + `
+    <div style="padding:11px 22px;text-align:center;">
+      <a href="#" style="font-size:12px;font-weight:600;color:var(--blue);"
+         role="button">View all activity →</a>
+    </div>`;
+}
+
+/* ============================================================
+   MODULE: SIMULATED LIVE KPI TICKER
+   Gently nudges numbers to simulate a live platform
+============================================================ */
+function startLiveTicker() {
+  const targets = {
+    'kpi-views'    : 12394,
+    'kpi-campaigns': 47,
+    'kpi-fraud'    : 1247,
+  };
+
+  setInterval(() => {
+    // Views: increment by small random amount
+    const viewEl = $('#kpi-views');
+    if (viewEl) {
+      const current = parseInt(viewEl.textContent.replace(/,/g,''), 10);
+      const next    = current + Math.floor(Math.random() * 3);
+      viewEl.textContent = next.toLocaleString();
+    }
+
+    // Fraud: increment occasionally
+    if (Math.random() > 0.7) {
+      const fraudEl = $('#kpi-fraud');
+      if (fraudEl) {
+        const current = parseInt(fraudEl.textContent.replace(/,/g,''), 10);
+        fraudEl.textContent = (current + 1).toLocaleString();
+      }
+    }
+  }, 3000);
+}
+
+/* ============================================================
+   MODULE: INIT
+============================================================ */
+function init() {
+  // Build the SVG chart
+  buildChart();
+
+  // Animate KPI counters on load
+  animateCounter($('#kpi-earned'),    245800, 1600);
+  animateCounter($('#kpi-views'),     12394,  1400);
+  animateCounter($('#kpi-campaigns'), 47,     800);
+  animateCounter($('#kpi-fraud'),     1247,   1200);
+
+  // Wallet counter animation
+  animateCounter($('#walletBalance'),  45200,  1400);
+  animateCounter($('#walletViews'),    2480,   1200);
+  animateCounter($('#walletCampaigns'), 18,     600);
+
+  // Milestone progress bar
+  setTimeout(() => {
+    setMilestoneProgress(STATE.milestoneViews, STATE.milestoneTarget);
+  }, 400);
+
+  // Populate leaderboards
+  renderLeaderboards();
+
+  // Activity feed
+  renderActivityFeed();
+
+  // Start live ticker
+  startLiveTicker();
+
+  // Welcome toast
+  setTimeout(() => {
+    showToast('info', 'Welcome back, Ma Khin Thiri!',
+      'You have 2 new milestone rewards available.');
+  }, 900);
+
+  setTimeout(() => {
+    showToast('gold', '🔥 Hot Campaign Alert!',
+      'Shwe Taung Dev Launch is paying 8 MMK/view — join now!');
+  }, 3200);
+}
+
+// Run after DOM is fully parsed
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
